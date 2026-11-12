@@ -92,3 +92,52 @@ st.info(f"""
 **Estimated Annual Incidents:** {issue_details['Estimated Annual Incidents']}  
 **Proposed Solution:** {issue_details['Status / Planned Fix']}
 """)
+
+st.divider()
+
+# 3. Sidebar Filters
+st.sidebar.header('Filter Issues')
+min_severity = st.sidebar.slider(
+    'Minimum Severity Rating (1-10):',
+    min_value=1,
+    max_value=10,
+    value=6,
+    step=1,
+)
+
+filtered_df = df[df['Severity Rating (1-10)'] >= min_severity]
+
+# 4. Raw Data View
+st.subheader('📌 Transport Challenges Data')
+st.dataframe(filtered_df, use_container_width=True)
+
+# 5. Visualizations
+st.divider()
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader('Incident Frequency by Issue')
+    st.bar_chart(filtered_df.set_index('Issue Category')[
+        'Estimated Annual Incidents'
+    ])
+
+with col2:
+    st.subheader('Severity Comparison')
+    st.bar_chart(filtered_df.set_index('Issue Category')[
+        'Severity Rating (1-10)'
+    ])
+
+# 6. Detailed Issue Inspector
+st.divider()
+st.subheader('🔍 Key Problem Spotlight')
+selected_issue = st.selectbox(
+    'Select a problem area to inspect:', df['Issue Category']
+)
+
+issue_details = df[df['Issue Category'] == selected_issue].iloc[0]
+st.info(f"""
+**Location:** {issue_details['Primary Corridor / Location']}  
+**Severity:** {issue_details['Severity Rating (1-10)']}/10  
+**Estimated Annual Incidents:** {issue_details['Estimated Annual Incidents']}  
+**Proposed Solution:** {issue_details['Status / Planned Fix']}
+""")
